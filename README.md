@@ -10,6 +10,14 @@
 - Отображение результатов классификации в реальном времени.
 
 ## Технологии
-- Python
+- Python 3.11
 - Pytesseract
 - Streamlit
+- Docker/Docker Compose
+- Poetry для управления зависимостями
+
+## Установка и Запуск
+```bash
+git clone https://github.com/litkirill/ChatImageClassifier.git
+cd ChatImageClassifier
+docker-compose up --build
