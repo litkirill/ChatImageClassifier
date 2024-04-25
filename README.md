@@ -11,7 +11,7 @@
 
 ## Технологии
 - Python 3.11
-- Pytesseract
+- EasyOCR
 - Streamlit
 - Docker/Docker Compose
 - Poetry для управления зависимостями
