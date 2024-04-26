@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from .types import LabelType
 
 load_dotenv()
+
 CATALOG_ID = os.getenv('CATALOG_ID')
 API_KEY = os.getenv('YANDEX_API_KEY')
 

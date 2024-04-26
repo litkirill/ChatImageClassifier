@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: chatimageclassifier
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8051:8051"
+    environment:
+      - CATALOG_ID
+      - YANDEX_API_KEY

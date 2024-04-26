@@ -12,4 +12,4 @@ COPY . /app
 
 EXPOSE 8501
 
-CMD ["poetry", "run", "streamlit", "run", "src/streamlit_app/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["poetry", "run", "python","-m" ,"streamlit", "run", "src/streamlit_app/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
