@@ -1,5 +1,6 @@
 import os
 import easyocr
+from PIL import Image
 from dotenv import load_dotenv
 import requests
 import yaml
@@ -40,9 +41,8 @@ def create_prompt(text: str) -> dict:
     }
 
 
-def extract_text(image_path) -> str:
-    results = reader.readtext(image_path, detail=0, paragraph=True)
-    print(results)
+def extract_text(image: Image.Image) -> str:
+    results = reader.readtext(image, detail=0, paragraph=True)
     return " ".join([result for result in results])
 
 
@@ -59,15 +59,14 @@ def classify_text(text: str) -> str:
     if response.status_code != 200:
         raise Exception(f"API error: {response.text}")
 
-    # response_dict = json.loads(response)
     response_dict = response.json()
     predicted = response_dict['result']['alternatives'][0]['message'][
         'text']
     return predicted
 
 
-def predict_model(image_path) -> LabelType:
-    text = extract_text(image_path)
+def predict_model(image: Image.Image) -> LabelType:
+    text = extract_text(image)
     predicted = classify_text(text)
 
     return LabelType.CHAT if "<chat>" in predicted else LabelType.NOT_CHAT
