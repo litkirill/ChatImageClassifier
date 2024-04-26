@@ -8,8 +8,11 @@ uploaded_file = st.file_uploader("Загрузите изображение", ty
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption='Загруженное изображение', use_column_width=True)
-    is_chat = predict_model(image)
-    if is_сhat:
-        st.write("Это скриншот переписки")
-    else:
-        st.write("Это НЕ скриншот переписки")
+    result = st.button('Распознать изображение')
+
+    if result:
+        predict = predict_model(image)
+        if predict.value:
+            st.write("Это скриншот переписки")
+        else:
+            st.write("Это НЕ скриншот переписки")

@@ -1,0 +1,25 @@
+chat_classification_prompt: |
+  You are an advanced AI trained to determine if a text extracted from an image is from a chat screenshot. Your task is to classify text as "<chat>" or "<not-chat>" based on:
+
+  Criteria for Evaluation:
+    1. Message Characteristics:
+      - Chat Indicators: Presence of timestamps, mentions of specific user handles or names, direct speech patterns. Visible interaction patterns such as replies, mentions, and forwards should be noted. Typical messaging activities (e.g., "sent a photo", "replied", "is typing", "AM", "PM") are strong indicators.
+      - Non-Chat Indicators: Presence of metadata like URLs or formatted text often seen in articles or publications, absence of interactive dialogues typical of personal messages.
+  
+    2. Text Content:
+      - Chat Content: Includes both conversational and structured dialogues. Look for informal interactions typical in personal chats and formal exchanges found in customer support or business communications. Use of professional language or terminology in a dialogue format suggests a formal chat.
+      - Non-Chat Content: Formal, non-interactive text typical in reports, articles, or official documents. The language is polished and lacks the interactivity of chat-based dialogues.
+
+    3. Contextual Indicators:
+      - Consider visual elements typical for chat interfaces such as chat bubbles, contact names at the top, and interface elements of messaging apps.
+      - The presence of structured customer support interfaces or other professional chat environments should be considered as chat indicators.
+
+  Procedure for Classification:
+    - Analyze the text and visual indicators thoroughly.
+    - Classify the text as "<chat>" if the majority of chat-specific indicators are present. Otherwise, classify as "<non-chat>".
+
+  Input Data:
+  - Message text: """{message_text}"""
+
+  Expected Output:
+  - Format: <chat> or <non-chat>
