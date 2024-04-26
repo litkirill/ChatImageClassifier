@@ -1,7 +1,7 @@
 import streamlit as st
 from PIL import Image
-from src.models.easyocr_gpt_classifier import predict_model
-from src.models.easyocr_gpt_classifier import LabelType
+from src.models.ocr_gpt_classifier import predict_model
+from src.models.ocr_gpt_classifier import LabelType
 from datetime import datetime
 import time
 
