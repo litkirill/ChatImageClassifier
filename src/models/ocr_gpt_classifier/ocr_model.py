@@ -1,8 +1,8 @@
-from typing import Optional
 import base64
 import json
 import os
 import requests
+from typing import IO, Optional
 from dotenv import load_dotenv
 from loguru import logger
 
@@ -13,23 +13,25 @@ YANDEX_OCR_API_KEY = os.getenv('YANDEX_OCR_API_KEY')
 
 if not CATALOG_ID or not YANDEX_OCR_API_KEY:
     logger.error("Critical environment variables are missing.")
-    exit(1)
+    raise EnvironmentError("Critical environment variables are missing. Please check CATALOG_ID and YANDEX_OCR_API_KEY.")
 
 url = "https://ocr.api.cloud.yandex.net/ocr/v1/recognizeText"
 
-logger.add("debug.log", format="{time} {level} {message}", level="DEBUG")
+logger.add(
+    "debug.log", format="{time} {level} {message}",
+    level="DEBUG", rotation="10 MB", compression="zip"
+)
 
 
-def encode_image_to_base64(image_path: str) -> Optional[str]:
+def encode_image_to_base64(uploaded_file: IO[bytes]) -> Optional[str]:
     """Encodes an image to a base64 string."""
     try:
-        # image_file = open(image_path, "rb").read()
-        image_file = image_path.read()
-        encoded_image = base64.b64encode(image_file).decode('utf-8')
+        image_bytes: bytes = uploaded_file.read()
+        encoded_image: str = base64.b64encode(image_bytes).decode('utf-8')
         logger.debug("Image encoded successfully")
         return encoded_image
     except FileNotFoundError:
-        logger.error(f"File not found - {image_path}")
+        logger.error(f"File not found")
         return None
 
 
@@ -63,20 +65,10 @@ def call_ocr_api(request_body: str) -> Optional[dict]:
         }
         response = requests.post(url, headers=headers, data=request_body)
         response.raise_for_status()  # Raises an HTTPError for bad requests
-        logger.debug("API call was successful")
+        logger.debug("OCR API call was successful")
         return response.json()
-    except requests.exceptions.HTTPError as e:
-        logger.error(f"HTTP error occurred: {e}")
-        return None
-    except requests.exceptions.ConnectionError as e:
-        logger.error(f"Connection error occurred: {e}")
-        return None
-    except requests.exceptions.Timeout as e:
-        logger.error("The request timed out: {e}")
-        return None
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
-        return None
+    except requests.exceptions.RequestException as e:
+        raise ConnectionError(f"Failed to send request: {e}")
 
 
 def extract_text_from_ocr_response(ocr_result: dict) -> Optional[str]:
@@ -90,10 +82,11 @@ def extract_text_from_ocr_response(ocr_result: dict) -> Optional[str]:
         return None
 
 
-def extract_text_from_image(image_path: str) -> Optional[str]:
+def extract_text_from_image(uploaded_file: IO[bytes]) -> Optional[str]:
     """Extracts text from an image using the Yandex OCR API."""
+    print(type(uploaded_file))
 
-    image_base64 = encode_image_to_base64(image_path)
+    image_base64 = encode_image_to_base64(uploaded_file)
     if not image_base64:
         logger.error("Failed to encode the image.")
         return None
