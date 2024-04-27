@@ -9,7 +9,7 @@ from loguru import logger
 load_dotenv()
 
 CATALOG_ID = os.getenv('CATALOG_ID')
-YANDEX_OCR_API_KEY = os.getenv('YANDEX_GPT_API_KEY')
+YANDEX_OCR_API_KEY = os.getenv('YANDEX_OCR_API_KEY')
 
 if not CATALOG_ID or not YANDEX_OCR_API_KEY:
     logger.error("Critical environment variables are missing.")
@@ -23,7 +23,8 @@ logger.add("debug.log", format="{time} {level} {message}", level="DEBUG")
 def encode_image_to_base64(image_path: str) -> Optional[str]:
     """Encodes an image to a base64 string."""
     try:
-        image_file = open(image_path, "rb").read()
+        # image_file = open(image_path, "rb").read()
+        image_file = image_path.read()
         encoded_image = base64.b64encode(image_file).decode('utf-8')
         logger.debug("Image encoded successfully")
         return encoded_image
@@ -87,3 +88,29 @@ def extract_text_from_ocr_response(ocr_result: dict) -> Optional[str]:
     except Exception as e:
         logger.error(f"An error occurred while extracting text: {e}")
         return None
+
+
+def extract_text_from_image(image_path: str) -> Optional[str]:
+    """Extracts text from an image using the Yandex OCR API."""
+
+    image_base64 = encode_image_to_base64(image_path)
+    if not image_base64:
+        logger.error("Failed to encode the image.")
+        return None
+
+    request_body = create_request_body(image_base64)
+    if not request_body:
+        logger.error("Failed to create the request body.")
+        return None
+
+    ocr_result = call_ocr_api(request_body)
+    if not ocr_result:
+        logger.error("OCR API call failed.")
+        return None
+
+    extracted_text = extract_text_from_ocr_response(ocr_result)
+    if not extracted_text:
+        logger.error("Failed to extract text from the OCR response.")
+        return None
+
+    return extracted_text
