@@ -21,7 +21,8 @@
 
 Укажите переменные окружения в файле .env:
 - CATALOG_ID: Идентификатор каталога Yandex Cloud.
-- YANDEX_API_KEY: API ключ для доступа к сервисам Yandex Cloud.
+- YANDEX_GPT_API_KEY: API ключ для доступа к YandexGPT.
+- YANDEX_OCR_API_KEY: API ключ для доступа к Yandex Vision OCR.
 
 ## Установка и Запуск
 ```bash
