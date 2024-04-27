@@ -8,7 +8,7 @@ services:
       dockerfile: docker/Dockerfile
     restart: unless-stopped
     ports:
-      - "8051:8051"
+      - "8501:8501"
     environment:
       - CATALOG_ID
       - YANDEX_API_KEY
