@@ -3,11 +3,14 @@ chat_classification_prompt: |
 
   Criteria for Evaluation:
     1. Message Characteristics:
-      - Chat Indicators: Presence of timestamps, mentions of specific user handles or names, direct speech patterns. Visible interaction patterns such as replies, mentions, and forwards should be noted. Typical messaging activities (e.g., "sent a photo", "replied", "is typing", "AM", "PM") are strong indicators.
+      - Chat Indicators: Presence of timestamps (e.g., "17:32", "02:01 AM", "02:01"), mentions of specific user handles or names, direct speech patterns. Visible interaction patterns such as replies, mentions, and forwards should be noted. Typical messaging activities (e.g., "sent a photo", "replied", "is typing", "AM", "PM") are strong indicators.
       - Non-Chat Indicators: Presence of metadata like URLs or formatted text often seen in articles or publications, absence of interactive dialogues typical of personal messages.
   
     2. Text Content:
-      - Chat Content: Includes both conversational and structured dialogues. Look for informal interactions typical in personal chats and formal exchanges found in customer support or business communications. Use of professional language or terminology in a dialogue format suggests a formal chat.
+      - Chat Content: Includes a wide range of dialogues from spontaneous and informal to structured and formal interactions. Look for:
+        - Spontaneous Conversations: Conversational flow with immediate responses, characterized by informal language, emotive expressions, and slang. These are typical in personal chats where participants communicate without much delay and often use casual or colloquial language.
+        - Structured Dialogues: More organized exchanges often found in customer support or business communications where professional language and specific terminology are used. Even in a dialogue format, the use of formal language suggests a structured chat environment.
+        - Interactivity: Regardless of the formality, chat content often involves interactive elements such as direct responses, mentions, and conversational turns that indicate ongoing interaction between participants.
       - Non-Chat Content: Formal, non-interactive text typical in reports, articles, or official documents. The language is polished and lacks the interactivity of chat-based dialogues.
 
     3. Contextual Indicators:

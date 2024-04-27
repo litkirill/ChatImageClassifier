@@ -15,7 +15,6 @@ def predict_model(uploaded_file) -> Optional[LabelType]:
     screenshot."""
     try:
         text = extract_text_from_image(uploaded_file)
-        print(text)
         if text is None:
             raise ValueError("No text extracted; possibly an invalid.")
         predicted = classify_text(text)
