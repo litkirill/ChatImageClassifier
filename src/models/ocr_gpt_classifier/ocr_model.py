@@ -76,3 +76,14 @@ def call_ocr_api(request_body: str) -> Optional[dict]:
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
         return None
+
+
+def extract_text_from_ocr_response(ocr_result: dict) -> Optional[str]:
+    """Extracts and returns the full text from an OCR API response."""
+    try:
+        full_text = ocr_result["result"]["textAnnotation"]["fullText"]
+        logger.debug("Text extracted successfully")
+        return full_text
+    except Exception as e:
+        logger.error(f"An error occurred while extracting text: {e}")
+        return None
