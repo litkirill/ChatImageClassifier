@@ -11,4 +11,7 @@ services:
       - "8501:8501"
     environment:
       - CATALOG_ID
-      - YANDEX_API_KEY
+      - YANDEX_GPT_API_KEY
+      - YANDEX_OCR_API_KEY
+    volumes:
+      - ./logs:/app/logs
