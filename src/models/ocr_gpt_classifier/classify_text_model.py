@@ -22,7 +22,7 @@ if not CATALOG_ID or not YANDEX_GPT_API_KEY:
 url = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
 
 logger.add(
-    "debug.log", format="{time} {level} {message}",
+    "logs/logs_from_app.log", format="{time} {level} {message}",
     level="DEBUG", rotation="10 MB", compression="zip"
 )
 

@@ -18,7 +18,7 @@ if not CATALOG_ID or not YANDEX_OCR_API_KEY:
 url = "https://ocr.api.cloud.yandex.net/ocr/v1/recognizeText"
 
 logger.add(
-    "debug.log", format="{time} {level} {message}",
+    "logs/logs_from_app.log", format="{time} {level} {message}",
     level="DEBUG", rotation="10 MB", compression="zip"
 )
 

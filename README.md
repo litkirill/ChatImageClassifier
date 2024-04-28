@@ -14,6 +14,7 @@
 - Yandex Vision OCR
 - YandexGPT
 - Streamlit
+- Loguru
 - Docker/Docker Compose
 - Poetry для управления зависимостями
 

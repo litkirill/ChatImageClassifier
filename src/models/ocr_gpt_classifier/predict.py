@@ -5,7 +5,7 @@ from .classify_text_model import classify_text
 from .types import LabelType
 
 logger.add(
-    "debug.log", format="{time} {level} {message}",
+    "logs/logs_from_app.log", format="{time} {level} {message}",
     level="DEBUG", rotation="10 MB", compression="zip"
 )
 
