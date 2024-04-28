@@ -8,17 +8,16 @@ chat_classification_prompt: |
   
     2. Text Content:
       - Chat Content: Includes a wide range of dialogues from spontaneous and informal to structured and formal interactions. Look for:
-        - Spontaneous Conversations: Conversational flow with immediate responses, characterized by informal language, emotive expressions, and slang. These are typical in personal chats where participants communicate without much delay and often use casual or colloquial language.
+        - Spontaneous Conversations: Conversational flow with immediate responses, characterized by informal language, emotive expressions, and slang. These are typical in personal chats where participants communicate without much delay and often use casual or colloquial language. However, ensure that these features are accompanied by visual or textual chat-specific elements before classifying as "<chat>".
         - Structured Dialogues: More organized exchanges often found in customer support or business communications where professional language and specific terminology are used. Even in a dialogue format, the use of formal language suggests a structured chat environment.
         - Interactivity: Regardless of the formality, chat content often involves interactive elements such as direct responses, mentions, and conversational turns that indicate ongoing interaction between participants.
       - Non-Chat Content: Formal, non-interactive text typical in reports, articles, or official documents. The language is polished and lacks the interactivity of chat-based dialogues.
 
     3. Contextual Indicators:
-      - Consider visual elements typical for chat interfaces such as chat bubbles, contact names at the top, and interface elements of messaging apps.
-      - The presence of structured customer support interfaces or other professional chat environments should be considered as chat indicators.
+      - Visual elements that are typical for chat interfaces such as chat bubbles, contact names at the top, and interface elements of messaging apps should strongly indicate a chat. The absence of such elements, even in the presence of informal speech, may suggest a non-chat context.
 
   Procedure for Classification:
-    - Analyze the text and visual indicators thoroughly.
+    - Analyze the text, visual, and contextual indicators thoroughly.
     - Classify the text as "<chat>" if the majority of chat-specific indicators are present. Otherwise, classify as "<non-chat>".
 
   Input Data:
