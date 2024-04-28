@@ -12,11 +12,12 @@ logger.add(
 
 def predict_model(uploaded_file) -> Optional[LabelType]:
     """Predicts whether an image contains text that classifies it as a chat
-    screenshot."""
+    screenshot or not."""
     try:
         text = extract_text_from_image(uploaded_file)
-        if text is None:
-            raise ValueError("No text extracted; possibly an invalid.")
+        if text is None or text.strip() == "":
+            logger.info("No text found on the image.")
+            return LabelType.NOT_CHAT
         predicted = classify_text(text)
         return LabelType.CHAT if "<chat>" in predicted else LabelType.NOT_CHAT
     except Exception as e:
