@@ -84,8 +84,6 @@ def extract_text_from_ocr_response(ocr_result: dict) -> Optional[str]:
 
 def extract_text_from_image(uploaded_file: IO[bytes]) -> Optional[str]:
     """Extracts text from an image using the Yandex OCR API."""
-    print(type(uploaded_file))
-
     image_base64 = encode_image_to_base64(uploaded_file)
     if not image_base64:
         logger.error("Failed to encode the image.")
