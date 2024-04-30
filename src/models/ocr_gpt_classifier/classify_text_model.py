@@ -33,7 +33,7 @@ def load_prompt_template() -> str:
         base_path = os.path.abspath(os.path.dirname(__file__))
         prompts_path = os.path.join(base_path, '..', '..', '..',
                                     'prompts.yaml')
-        with open(prompts_path, "r") as file:
+        with open(prompts_path, "r", encoding='utf-8') as file:
             prompts = yaml.safe_load(file)
         logger.debug("Prompt template loaded successfully.")
         return prompts
@@ -61,7 +61,7 @@ def create_prompt(text: str) -> dict:
         "completionOptions": {
             "stream": False,
             "temperature": 0.,
-            "maxTokens": 100
+            "maxTokens": 200
         },
         "messages": [{"role": "system", "text": prompt_text}]
     }
