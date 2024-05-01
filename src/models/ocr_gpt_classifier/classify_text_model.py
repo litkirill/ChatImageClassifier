@@ -5,11 +5,11 @@ from openai import OpenAI
 from openai import OpenAIError
 from .types import LabelType
 from src.config import logger, \
-    OPENAI_API_KEY, OPENAI_COMPLETION_OPTIONS, GPT_PROXY_URL, GPT_VERSION
+    OPENAI_API_KEY, OPENAI_COMPLETION_OPTIONS, GPT_URL, GPT_VERSION
 
 client = OpenAI(
     api_key=OPENAI_API_KEY,
-    base_url=GPT_PROXY_URL
+    base_url=GPT_URL
 )
 
 

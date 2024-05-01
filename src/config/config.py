@@ -16,7 +16,7 @@ OPENAI_COMPLETION_OPTIONS = {
     "presence_penalty": 0,
 }  # Parameters for GPT
 
-GPT_PROXY_URL = os.getenv('GPT_PROXY_URL')
+GPT_URL = os.getenv('GPT_URL')
 
 GPT_VERSION = "gpt-3.5-turbo-0125"
 
@@ -27,7 +27,7 @@ YANDEX_OCR_URL = os.getenv('YANDEX_OCR_URL')
 
 REQUIRED_ENV_VARS = [
     'OPENAI_API_KEY',
-    'GPT_PROXY_URL',
+    'GPT_URL',
     'CATALOG_ID',
     'YANDEX_OCR_API_KEY',
     'YANDEX_OCR_URL'

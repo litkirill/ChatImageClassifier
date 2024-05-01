@@ -11,7 +11,7 @@ def encode_image_to_base64(uploaded_file: IO[bytes]) -> Optional[str]:
     try:
         image_bytes: bytes = uploaded_file.read()
         encoded_image: str = base64.b64encode(image_bytes).decode('utf-8')
-        logger.debug("Image encoded successfully")
+        logger.info("Image encoded successfully")
         return encoded_image
     except FileNotFoundError:
         logger.error(f"Image file not found")
@@ -30,7 +30,7 @@ def create_request_body(image_base64: Optional[str]) -> Optional[str]:
         "content": image_base64
     }
     request_body = json.dumps(body)
-    logger.debug("Request body created successfully")
+    logger.info("Request body created successfully")
     return request_body
 
 
@@ -92,7 +92,7 @@ def extract_text_from_image(uploaded_file: IO[bytes]) -> Optional[str]:
 
     extracted_text = extract_text_from_ocr_response(ocr_result)
     if not extracted_text:
-        logger.error("Failed to extract text from the OCR response.")
+        logger.info("Failed to extract text from the OCR response.")
         return None
 
     logger.info(
