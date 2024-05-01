@@ -1,13 +1,8 @@
-from loguru import logger
 from typing import Optional
+from src.config import logger
 from .ocr_model import extract_text_from_image
 from .classify_text_model import classify_text
 from .types import LabelType
-
-logger.add(
-    "logs/logs_from_app.log", format="{time} {level} {message}",
-    level="DEBUG", rotation="10 MB", compression="zip"
-)
 
 
 def predict_model(uploaded_file) -> Optional[LabelType]:

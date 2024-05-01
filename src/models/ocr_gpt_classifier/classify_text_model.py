@@ -1,31 +1,15 @@
 import os
 import yaml
 from typing import Optional
-from loguru import logger
 from openai import OpenAI
 from openai import OpenAIError
-from src.config import OPENAI_API_KEY, OPENAI_COMPLETION_OPTIONS, \
-    GPT_PROXY_URL, GPT_VERSION
 from .types import LabelType
-
-if not OPENAI_API_KEY:
-    logger.error(
-        "Critical environment variables are missing. "
-        "Please check OPENAI_API_KEY"
-    )
-    raise EnvironmentError(
-        "Critical environment variables are missing. "
-        "Please check OPENAI_API_KEY"
-    )
+from src.config import logger, \
+    OPENAI_API_KEY, OPENAI_COMPLETION_OPTIONS, GPT_PROXY_URL, GPT_VERSION
 
 client = OpenAI(
     api_key=OPENAI_API_KEY,
     base_url=GPT_PROXY_URL
-)
-
-logger.add(
-    "logs/logs_from_app.log", format="{time} {level} {message}",
-    level="DEBUG", rotation="10 MB", compression="zip"
 )
 
 
@@ -38,7 +22,7 @@ def load_prompt_template() -> dict:
         )
         with open(prompts_path, "r", encoding='utf-8') as file:
             prompts = yaml.safe_load(file)
-        logger.debug("Prompt template loaded successfully.")
+        logger.info("Prompt template loaded successfully.")
         return prompts
     except FileNotFoundError:
         logger.error("Prompt configuration file not found.")
@@ -55,7 +39,7 @@ def create_prompt(text: str) -> dict:
         template = load_prompt_template()
         prompt_text = template['chat_classification_prompt'].format(
             message_text=text)
-        logger.debug("Prompt created successfully.")
+        logger.info("Prompt created successfully.")
         return prompt_text
     except KeyError:
         logger.error("Missing 'chat_classification_prompt' key in template.")
@@ -63,23 +47,21 @@ def create_prompt(text: str) -> dict:
 
 
 def api_call(prompt: str) -> Optional[dict]:
-    """Sends a request to the API and returns the response with error
-    handling."""
+    """Call the OpenAI API to get a response."""
     try:
-        logger.info("Sending request to OpenAI API...")
         response = client.chat.completions.create(
             model=GPT_VERSION,
             messages=[{"role": "user", "content": prompt}],
             **OPENAI_COMPLETION_OPTIONS,
         )
-
+        logger.info("OpenAI API call was successful")
         return response
     except OpenAIError as e:
         logger.error(f"An error occurred with the OpenAI API: {e}")
         return None
     except Exception as e:
         logger.error(
-            f"An unexpected error occurred during text classification: {e}")
+            f"An unexpected error occurred during the OpenAI API call: {e}")
         return None
 
 
@@ -87,7 +69,7 @@ def extract_prediction(response) -> LabelType:
     """Extracts the prediction from the API response with error handling."""
     try:
         predicted_text = response.choices[0].message.content
-        logger.debug("Prediction extracted successfully.")
+        logger.info("Prediction extracted successfully.")
         return predicted_text
     except KeyError as e:
         logger.error(f"Failed to extract prediction from response: {e}")

@@ -2,20 +2,8 @@ import base64
 import json
 import requests
 from typing import IO, Optional
-from loguru import logger
-from src.config import CATALOG_ID, YANDEX_OCR_API_KEY, YANDEX_OCR_URL
-
-if not CATALOG_ID or not YANDEX_OCR_API_KEY:
-    logger.error("Critical environment variables are missing.")
-    raise EnvironmentError(
-        "Critical environment variables are missing. Please check CATALOG_ID "
-        "and YANDEX_OCR_API_KEY.")
-
-
-logger.add(
-    "logs/logs_from_app.log", format="{time} {level} {message}",
-    level="DEBUG", rotation="10 MB", compression="zip"
-)
+from src.config import logger, \
+    CATALOG_ID, YANDEX_OCR_API_KEY, YANDEX_OCR_URL
 
 
 def encode_image_to_base64(uploaded_file: IO[bytes]) -> Optional[str]:
@@ -26,7 +14,7 @@ def encode_image_to_base64(uploaded_file: IO[bytes]) -> Optional[str]:
         logger.debug("Image encoded successfully")
         return encoded_image
     except FileNotFoundError:
-        logger.error(f"File not found")
+        logger.error(f"Image file not found")
         return None
 
 
@@ -58,19 +46,27 @@ def call_ocr_api(request_body: str) -> Optional[dict]:
             "x-folder-id": CATALOG_ID,
             "x-data-logging-enabled": "true"
         }
-        response = requests.post(YANDEX_OCR_URL, headers=headers, data=request_body)
+        response = requests.post(YANDEX_OCR_URL, headers=headers,
+                                 data=request_body)
         response.raise_for_status()  # Raises an HTTPError for bad requests
-        logger.debug("OCR API call was successful")
+        logger.info("OCR API call was successful")
         return response.json()
+
     except requests.exceptions.RequestException as e:
-        raise ConnectionError(f"Failed to send request: {e}")
+        logger.error(f"Failed to send request: {e}",
+                     exc_info=True)  # Log traceback
+        raise ConnectionError(f"Failed to send request OCR API: {e}")
+    except Exception as e:
+        logger.error(
+            f"An unexpected error occurred during the OCR API call: {e}")
+        return None
 
 
 def extract_text_from_ocr_response(ocr_result: dict) -> Optional[str]:
     """Extracts and returns the full text from an OCR API response."""
     try:
         full_text = ocr_result["result"]["textAnnotation"]["fullText"]
-        logger.debug("Text extracted successfully")
+        logger.info("Text extracted successfully")
         return full_text
     except Exception as e:
         logger.error(f"An error occurred while extracting text: {e}")
