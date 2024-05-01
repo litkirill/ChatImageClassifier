@@ -1,21 +1,16 @@
 import base64
 import json
-import os
 import requests
 from typing import IO, Optional
-from dotenv import load_dotenv
 from loguru import logger
-
-load_dotenv()
-
-CATALOG_ID = os.getenv('CATALOG_ID')
-YANDEX_OCR_API_KEY = os.getenv('YANDEX_OCR_API_KEY')
+from src.config import CATALOG_ID, YANDEX_OCR_API_KEY, YANDEX_OCR_URL
 
 if not CATALOG_ID or not YANDEX_OCR_API_KEY:
     logger.error("Critical environment variables are missing.")
-    raise EnvironmentError("Critical environment variables are missing. Please check CATALOG_ID and YANDEX_OCR_API_KEY.")
+    raise EnvironmentError(
+        "Critical environment variables are missing. Please check CATALOG_ID "
+        "and YANDEX_OCR_API_KEY.")
 
-url = "https://ocr.api.cloud.yandex.net/ocr/v1/recognizeText"
 
 logger.add(
     "logs/logs_from_app.log", format="{time} {level} {message}",
@@ -63,7 +58,7 @@ def call_ocr_api(request_body: str) -> Optional[dict]:
             "x-folder-id": CATALOG_ID,
             "x-data-logging-enabled": "true"
         }
-        response = requests.post(url, headers=headers, data=request_body)
+        response = requests.post(YANDEX_OCR_URL, headers=headers, data=request_body)
         response.raise_for_status()  # Raises an HTTPError for bad requests
         logger.debug("OCR API call was successful")
         return response.json()
@@ -103,5 +98,9 @@ def extract_text_from_image(uploaded_file: IO[bytes]) -> Optional[str]:
     if not extracted_text:
         logger.error("Failed to extract text from the OCR response.")
         return None
+
+    logger.info(
+        f"Text classified successfully: {extracted_text.replace("\n", "\\n")}"
+    )
 
     return extracted_text
