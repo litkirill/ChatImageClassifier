@@ -32,13 +32,15 @@ def load_prompt_template() -> dict:
         raise RuntimeError(f"Error parsing YAML file: {exc}")
 
 
-def create_prompt(text: str) -> dict:
+def create_prompt(visual_layout: dict, text: str) -> dict:
     """Formats a prompt for an API request using the specified text with
     error handling."""
     try:
         template = load_prompt_template()
         prompt_text = template['chat_classification_prompt'].format(
-            message_text=text)
+            text_content=text,
+            visual_layout=visual_layout
+        )
         logger.info("Prompt created successfully.")
         return prompt_text
     except KeyError:
@@ -76,10 +78,10 @@ def extract_prediction(response) -> LabelType:
         raise KeyError(f"Failed to extract prediction from response: {e}")
 
 
-def classify_text(text: str) -> Optional[LabelType]:
+def classify_text(visual_layout: dict, text: str) -> Optional[LabelType]:
     """Classifies text using the OpenAI API with error handling and logging."""
     try:
-        prompt = create_prompt(text)
+        prompt = create_prompt(visual_layout, text)
         response = api_call(prompt)
         predicted_text = extract_prediction(response)
         logger.info(f"Text classified successfully: {predicted_text}")

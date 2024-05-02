@@ -1,102 +1,35 @@
 chat_classification_prompt: |
   ### Task Description ###
-  You are an analytical assistant specializing in text classification. Your task is to accurately determine whether the given text belongs to the category <chat> or <non-chat>, based on a detailed analysis of the message structure, presence of timestamps, sender names, communication nature, and other key elements. You must use only the data present in the text, avoiding any assumptions or interpretations beyond explicit indications.
+  You are an analytical assistant specializing in both text and visual layout classification. Your task is to accurately determine whether the given text, accompanied by its visual layout from OCR data, belongs to the category <chat> or <non-chat>. This determination should be based on a detailed analysis of the message structure, presence of timestamps, sender names, communication nature, and visual layout such as block arrangement, line alignment, and word positioning.
 
-  ### Definitions ###
-  - **<chat>**: Text that represents a real-time or asynchronous conversation between two or more individuals, characterized by informal language, interactive dialogue, sequential message exchange, and often includes elements like timestamps, sender names, and conversational cues. This category typically covers texts from messaging platforms and chat applications.
-  - **<non-chat>**: Text that is typically formal, informative, or promotional, lacking direct, real-time interaction between multiple users. It includes structured compositions such as news articles, reports, blog posts, advertisements, and social media content that is not structured as direct dialogue. These texts focus more on delivering content to an audience rather than engaging in a conversation.
+  ### Visual Layout Criteria ###
+  1. **Block Arrangement**:
+     - **Dynamic Block Arrangement for <chat>**: Determine if the text arrangement supports a chat format. In scenarios with multiple messages, <chat> is often indicated by alternating text blocks that may align differently to represent different speakers. Look for alignment patterns and positioning that suggest a dialogue, even if blocks alternate from one side of the image to the other.
+     - **Single Large Block Consideration for <chat>**: Recognize that a single, large text block might represent a chat message if it occupies a significant area of the image. This scenario could arise when the OCR captures only one message, potentially a large, uninterrupted part of a chat. Indicators that this block is part of a chat include informal language, use of emoticons, and conversational text formatting, such as abrupt endings or ellipses indicating an incomplete statement (e.g., "So, what I was saying is..."). This might also include other conversational markers like casual greetings or sign-offs.  
+  2. **Line Alignment**:
+   - **Chat**:
+     - **Alternating Alignments for Multiple Messages**: If the image contains multiple messages, a typical <chat> format often features alternating alignments, with one set of messages aligned to the left and responses aligned to the right, reflecting dialogue turns between different speakers.
+     - **Single Message Alignment**: In cases where only one message is displayed, it may not alternate but can still be classified as <chat> if aligned to the left or right, rather than being centered. This alignment often mimics the layout seen in chat applications where users' texts are aligned based on the direction of the conversation.
+   - **Non-Chat**:
+     - Texts are typically aligned in a consistent manner, usually justified or centered across the document or image. This uniform alignment is common in formal documents, reports, articles, and promotional materials where the text is meant to be read continuously without the implication of a back-and-forth conversation.
 
-
-  ### System Message ###
-  When analyzing each aspect of the text, consider the following criteria weighting recommendations:
-
-  1. **Message Exchange** (Highest Priority):
-     - Examine if the text demonstrates a clear and sequential exchange of messages between two or more participants. This factor is most significant for determining the <chat> category.
-
+  ### Text Content Criteria ###
+  1. **Message Exchange**:
+     - **Primary Indicator for <chat>**: Determine if the text demonstrates a clear and sequential exchange of messages between two or more participants. Indicators of a <chat> include messages that directly respond to or follow from the previous ones, forming a coherent dialogue. This is often visible through interactive dialogue elements such as question and answer sequences, acknowledgments, or related follow-up comments.
+     - **Single Message Consideration for <chat>**: Even a single message can be indicative of a <chat> if it includes characteristics typical of chat interactions. These characteristics may include informal language, use of abbreviations, or context suggesting continuation of a conversation, such as a message that ends with ellipses ("...") or starts with "Re:" or similar phrases indicating a reply or ongoing dialogue.
+     - **Exception Handling for <chat>**: Isolated descriptions or statements that do not visibly interact with other messages can still be classified as <chat> if they include conversational cues or are formatted in a manner typical of chat environments (e.g., casual tone, layout mimicking messaging apps). The absence of a visible back-and-forth exchange does not automatically classify a text as <non-chat> if other chat-specific indicators are present.
+     - **Indicators for <non-chat>**: Texts should be classified as <non-chat> when they are primarily informational or promotional with a structured layout that lacks indications of personal interaction. Characteristics of <non-chat> include formal language, organized presentation (e.g., columns, lists), and content that aims to inform or advertise rather than engage in a conversation. Absence of personal tone, lack of informal language, and the structured format without conversational cues further support this classification.
+  
   2. **Timestamps and Senders**:
-     - Assess the presence of timestamps and sender names at the start or end of each message, supporting the structure of a dialogue.
+     - Are timestamp and sender names present at the start or end of each message, supporting the structure of a dialogue? Their presence must align with a conversational exchange pattern to be indicative of a chat. The inclusion of these elements at either the beginning or the end of messages is critical for recognizing the conversational nature of the text.
 
-  3. **Technical Elements and Notifications**:
-     - Look for elements typical of messengers, such as "sent a photo", "replied", "is typing", and other notifications which strongly indicate an active communication platform typical of personal or group chats.
+  ### Final Reasoning: ###
+  - Synthesize findings from visual and text analysis to arrive at a classification.
+  - Let's think step by step, considering all elements to determine if the text is <chat> or <non-chat>.
 
-  4. **Social Media Elements**:
-     - Evaluate the presence of social media elements like likes, comments, hashtags, which are strong indicators of the <non-chat> category.
-
-  5. **Visual and Contextual Elements**:
-     - Focus on visual interface elements such as banners, news feeds, or other commercial elements which might indicate a non-chat origin.
-
-  6. **Style and Context of Language Use**:
-     - Consider the overall style of the text, whether it is informational, official, or advertising in nature.
-
-  7. **Emotional Tone and Dialogue Logic** (Lowest Priority):
-     - Assess the emotional richness and the logical sequence of message exchange, using these elements to support other stronger indicators.
-
-  ### Steps for Text Analysis ###
-  #### Criteria for <chat> ####
-  1. **Timestamps and Senders**:
-     - Are timestamps and sender names present at the start or end of each message, supporting the structure of a dialogue? Their presence must align with a conversational exchange pattern to be indicative of a chat. The inclusion of these elements at either the beginning or the end of messages is critical for recognizing the conversational nature of the text.
-
-  2. **Message Exchange**:
-     - Does the text demonstrate a clear and sequential exchange of messages between two or more participants, where each message directly responds to or follows from the previous message? Look for signs of interactive dialogue, such as question and answer sequences, acknowledgments, or follow-up comments that are directly related. Isolated descriptions or statements that do not engage with other messages and lack clear responses do not qualify as <chat>. The presence of back-and-forth communication is essential to classify the text as <chat>.
-
-  3. **Technical Elements and Notifications**:
-     - Are there elements typical of messengers, such as "sent a photo", "replied", "is typing", "message seen", "voice message", "joined the chat", "left the chat", "pinned a message", or "changed the group name", present in the text? The presence of these specific chat features indicates an active communication platform typical of personal or group chats.
-
-  4. **Emotional Tone**:
-     - What is the emotional richness of the text? Are personal expressions or emotions evident, which would indicate informal chats?
-
-  #### Criteria for <non-chat> ####
-  1. **Social Media Elements**:
-     - Are there social media elements such as likes, comments, hashtags present? Analyze their context and relevance to determine if they support a non-chat classification.
-
-  2. **Visual and Contextual Elements**:
-     - Does the text contain visual interface elements of social networks or advertisements? Focus on banners, news feeds, or other commercial elements which might indicate a non-chat origin.
-
-    3. **Style and Context of Language Use**:
-     - What is the overall style of the text? Assess whether the text is informational, official, or advertising in nature, which are typically indicative of non-chat content. Consider the following aspects:
-       - **Informational**: Does the text provide factual data, statistics, or detailed information aimed at educating or informing the reader? Examples include articles, news updates, educational posts, FAQs, and informational brochures.
-       - **Official**: Is the language formal and used for official communication or documentation? This may include legal texts, corporate announcements, formal reports, government communications, and official statements.
-       - **Advertising**: Does the text aim to promote a product, service, or event? Look for marketing language that includes calls to action, promotional offers, brand mentions, and sales pitches.
-       - **Technical**: Is the text technical, containing jargon or terms specific to a particular industry or field? Examples might be technical manuals, academic papers, or industry-specific reports.
-     - Each of these styles typically lacks the informal, conversational tone found in chat conversations. Texts that fit these descriptions are likely to be classified as <non-chat> due to their structured, formal, or promotional nature.
-
-  4. **Dialogue Logic**:
-     - Examine the logical sequence of message exchange. If the messages are isolated and unrelated, it strongly indicates a <non-chat> classification. Is there a continuous dialogue, or are the messages disjointed and without a logical connection?
-
-  
-  #### START EXAMPLES ####
-    **<chat> Examples:**
-   - **Text**: "10:35\n10 19 all\nfriendly_bot\nbot\nWhat can this bot do?\nHello this is Navneet's bot!!\nMarch 28\n/start 10:34 //\nidk\n10:34\nHey\n10:34 //\nwhat's up?\n10:34\nHello\n10:34 //\nhey\n10:34\nBot\n10:34\n//\nidk\n10:34\nbot\n10:34 //\nso what?\n10:34\nWho are you? 10:34\n//\nNavneet's bot 10:34\nWhat can you do? 10:35\n/\nFor now I am in development phase so idk\nfam.\n10:35\nMessage\n"
-     **Answer**: <chat> This conversation features real-time, interactive exchanges with multiple participants and consistent timestamps, typical of a chat scenario.
-   - **Text**: "18:24\n164\n+ \nдобавить контакт\n2 марта 2023 г.\nСообщения и звонки защищены сквозным\nшифрованием. Третьи лица, включая\nWhatsApp, не могут прочитать ваши\nсообщения или прослушать звонки.\nПодробнее.\nздравствуйте, заберу заказ через\nполчаса\nпоследние четыре цифры номера\nтелефона 5125\n15:06 //\nЗдравствуйте! Ждем\n15:08\nа как к вам зайти?\n15:58 //\n5 этаж и можете написать мне)\n16:07\n"
-     **Answer**: <chat>: This text illustrates a sequence of messages that include responses to specific inquiries with real-time engagement, defining it as a chat.
-   - **Text**: "liv\nToday 1:04 PM\nLet's role play that we're old best\nfriends who haven't seen each other in\n10 years and are talking for the first time\nsince then\nYou start\nToday 3:18 PM\nomfg kenzen?!! wtf i never expected\nto see you on here! it's been foreverrrr\ndude. i guess i haven't seen you since\nthe whole Eiffel tower incident lol, how\nhave you been?\nWho is this?\n(you're doing great)\nyou don't remember me? olivia\nwe had chem together sophomore\nyear, i was always wearing black jeans\nand doc martens…ring a bell?\n(thank u, this is fun)\nOoohh!! Olivia! Sorry, I just got a new\nphone and all my contacts were\ndeleted\nWhat was your number again?\noh you slick motherf\nyou deserve it honestly\n5\nGIF\nType a message…\n"
-     **Answer**: <chat> This playful, interactive exchange mimics a real-life conversation with back-and-forth dialogue, fitting the chat criteria perfectly.
-   - **Text** "15:50\n: $46 |C\nКиночат МГУ\n377 members, 187 online\nPinned Message #8\niДорогие друзья! Мы постепенно\nработаем…\nЗдравствуйте! Можно спросить?\nКто-нибудь уже смотрел фильм\nСто лет тому вперёд? Хочется\nобсудить его.\n05:55\nEnigma\nМожно ещё спрошу не в тему?\nКакой фильм недавний произвёл\nна вас сильное эмоциональное\nвоздействие? Над которым вы\nвозможно плакали?\n2 11:22\nEnigma\nМогу сказать, что для меня таким\nфильмом был Звезда родилась,\nкоторый смотрел недавно, хотя\nсам фильм вышел уже давно 11:52\nEnigma\nМожно ещё спрошу не в тему? Како…\nАвария - дочь мента\n11:55\nEnigma\nАвария - дочь мента\n98\nХороший фильм? Спасибо, что\nподелились.\nedited 12:04\n)Message\n"
-     **Answer**: <chat> This group chat about movies demonstrates ongoing, thematic discussion among multiple participants, typical of real-time chat interactions.
-
-
-   **<non-chat> Examples:**
-   - **Text**: "Если вы\nперсонаж\nаниме - для\nвас есть\nугощение\n"
-     **Answer**: <non-chat> This example, likely a caption or isolated statement, lacks interactive elements and does not form part of a dialogue, typical of non-chat content.
-   - **Text**: "Даниил 22\n©\n11 км от вас\nДовольно успешный предприниматель.\nИмею дом на канарских островах. Готов\nпринять ту, которая реально хочет быть\nвместе, а не ради денег\nДАНИИЛ - поделиться профилем.\nУЗНАЙТЕ МНЕНИЕ ДРУЗЕЙ ОБ ЭТОМ ЧЕЛОВЕКЕ.\nПОЖАЛОВАТЬСЯ\n"
-     **Answer**: <non-chat> This profile description does not involve any direct interaction but is merely a self-description for public viewing, fitting the non-chat classification.
-   - **Text**: "Виктория 23\nЖивёт в городе Санкт-Петербург\n©\n6 км от вас\nВзрослые, обеспеченные,\nработающие мужчины это конечно\nхорошо, но вы когда-нибудь\nпробовали пить пиво за 49 руб. с 20\nлетним скейтером у него дома, пока\nродители на даче.\n"
-     **Answer**: <non-chat> Similar to the previous example, this profile provides a narrative description without any interactive dialogue, classifying it as non-chat.
-   - **Text**: "01:15\n*4G*\nКУЛОНЧИК ДЖОКЕРА\nComments\n195\n3 replies\n@Ann-jm8jz • 7 days ago\nНазвание: Хищные птицы. Потрясающая\nистория Харли Квинн\n257\nE\n15 replies\n@erionlinadarmut9808 • 3 days ago\nДжокер и Харли идеально двинутые друг для\nдруга, как бы сказал Дэдпул - два кусочка\nпазла\nвечно сорятся, пытаются друг др… Read more\n120\nAdd a comment…\n"
-     **Answer**: <non-chat> This comment section under a post, despite involving replies and interactions, is not a real-time conversation and lacks the flow of a dialogue, fitting the non-chat category.
-   - **Text**: ".l ROGERS LTE\n5:48 PM\n10%\nPost\npatagonia_surf\nPatagonia (clothing)\n2,789 likes\npatagonia_surf Using recycled materials means less\nimpact on the planet. We're taking #ResponsibiliTee\nby making our Responsibili-Tee shirts from 100%\nrecycled fibers, and they're also #FairTrade certified.\nLearn more and help change the garment industry for\ngood through the link in our profile.\nPhotos: @almackinnon and @jianca_lazarus\nView all 12 comments\n4 DAYS AGO\n"
-     **Answer**: <non-chat> This Instagram post, although interactive due to comments and likes, serves primarily as a broadcast message without direct real-time conversation, typical of <non-chat>.
-   - **Text**: "The New York Times\n@nytimes • 9h\nTwo people bombed an Indian restaurant outside Toronto on Thursday night,\ninjuring 15 people, many of them diners, the police said\n24\n118\n141\n°\nThe New York Times\n@nytimes • 2h\n"I have to admit I didn't think I would see the day that he would have handcuffs\non him," Rose McGowan said following Harvey Weinstein's arrest. "I have a\nvisceral need for him to have h Take a Screenshot\n50\n164\n556\nThe New York Times\n@nytimes • 6h\nSome American news outlets abruptly blocked access to their websites from\nEurope, choosing to black out readers rather than comply with the GDPR, a\nstrict new data privacy law\n"
-     **Answer**: <non-chat> News tweets are updates and not real-time interactions; they inform the public on various issues without engaging in direct dialogue, fitting the non-chat classification.
-   - **Text**: "12:12-\nY 4G\nО\nзаказе\nТворог с шоколадной крошкой\n6,7%, (0.250кг)\n152P\n76Р/шт\n2 шт\nДесерт многослойный с\nфруктовым соком, (0.3кг)\n150₽\n75Р/шт\n2 шт\nПакет-майка "ВкусВилл" малый,\n(0.006кг)\n16P\n8P/шт\n2 шт\nКоктейль из морепродуктов в\nмасле, 180 г, (0.180кг)\n225P\n225Р/шт\n1 шт\nСырники с малиновой начинкой,\nзам., (0.360кг)\n425P\n425Р/шт\n1 шт\nФорель малосоленая ломтики,\n150 г, (0.150кг)\n412P\n412Р/шт\n1 шт\nЙогурт питьевой\n"Черника-ежевика" 1,3%, (0.290кг)\n78P\n78Р/шт\n1 шт\nБесплатная доставка\nМинимальный заказ 0 Р\nМоя карта\nКаталог\nМагазины\nПрофиль\nПоддержка\n"
-     **Answer**: <non-chat> A detailed listing of grocery items with prices and descriptions, typical of an online shopping receipt or order summary, is categorized as <non-chat> due to its informative nature and lack of interactive dialogue.
-
-  #### END EXAMPLES ####
-  
   ### Input Data: ###
-  - Message text:: >>>>>{message_text}<<<<<
-  
+  - Text content and visual layout from OCR: >>>>>{text_content}, {visual_layout}<<<<<
+
   ### Expected Output ###
   - First line: Classify the text as <chat> or <non-chat>.
-  - Follow-up with detailed analysis: Provide reasoning based on the criteria outlined in the task description to support the classification.
+  - Follow-up with detailed analysis: Provide reasoning based on the criteria outlined to support the classification.

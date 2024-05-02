@@ -10,7 +10,7 @@ OPENAI_API_KEY = os.getenv(
 
 OPENAI_COMPLETION_OPTIONS = {
     "temperature": 0,
-    "max_tokens": 50,
+    "max_tokens": 150,
     "top_p": 1,
     "frequency_penalty": 0,
     "presence_penalty": 0,

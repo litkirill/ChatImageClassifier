@@ -1,7 +1,7 @@
 import base64
 import json
 import requests
-from typing import IO, Optional
+from typing import IO, Optional, Tuple, Any
 from src.config import logger, \
     CATALOG_ID, YANDEX_OCR_API_KEY, YANDEX_OCR_URL
 
@@ -62,18 +62,19 @@ def call_ocr_api(request_body: str) -> Optional[dict]:
         return None
 
 
-def extract_text_from_ocr_response(ocr_result: dict) -> Optional[str]:
+def extract_text_from_ocr_response(ocr_result: dict) -> Optional[tuple[dict, str]]:
     """Extracts and returns the full text from an OCR API response."""
     try:
         full_text = ocr_result["result"]["textAnnotation"]["fullText"]
+        visual_layout = ocr_result["result"]["textAnnotation"]['blocks']
         logger.info("Text extracted successfully")
-        return full_text
+        return full_text, visual_layout
     except Exception as e:
         logger.error(f"An error occurred while extracting text: {e}")
-        return None
+        return None, None
 
 
-def extract_text_from_image(uploaded_file: IO[bytes]) -> Optional[str]:
+def extract_text_from_image(uploaded_file: IO[bytes]) -> Optional[tuple[dict, str]]:
     """Extracts text from an image using the Yandex OCR API."""
     image_base64 = encode_image_to_base64(uploaded_file)
     if not image_base64:
@@ -90,7 +91,8 @@ def extract_text_from_image(uploaded_file: IO[bytes]) -> Optional[str]:
         logger.error("OCR API call failed.")
         return None
 
-    extracted_text = extract_text_from_ocr_response(ocr_result)
+    extracted_text, visual_layout = extract_text_from_ocr_response(ocr_result)
+
     if not extracted_text:
         logger.info("Failed to extract text from the OCR response.")
         return None
@@ -99,4 +101,4 @@ def extract_text_from_image(uploaded_file: IO[bytes]) -> Optional[str]:
         f"Text classified successfully: {extracted_text.replace("\n", "\\n")}"
     )
 
-    return extracted_text
+    return visual_layout, extracted_text
