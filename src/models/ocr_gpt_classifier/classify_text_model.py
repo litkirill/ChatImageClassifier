@@ -7,7 +7,7 @@ import yaml
 from openai import OpenAI, OpenAIError
 from src.config import logger, \
     OPENAI_API_KEY, OPENAI_COMPLETION_OPTIONS, GPT_URL, GPT_VERSION
-from .types import LabelType
+from src.config.types import LabelType
 
 client = OpenAI(
     api_key=OPENAI_API_KEY,

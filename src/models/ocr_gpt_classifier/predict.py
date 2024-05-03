@@ -9,7 +9,7 @@ from typing import Optional
 from src.config import logger
 from .ocr_model import extract_text_from_image
 from .classify_text_model import classify_text
-from .types import LabelType
+from src.config.types import LabelType
 
 
 def predict_model(uploaded_file) -> Optional[LabelType]:
