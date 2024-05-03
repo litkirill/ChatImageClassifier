@@ -1,11 +1,13 @@
+"""Module for classifying text using OpenAI's GPT model."""
+
 import os
-import yaml
 from typing import Optional
-from openai import OpenAI
-from openai import OpenAIError
-from .types import LabelType
+import yaml
+
+from openai import OpenAI, OpenAIError
 from src.config import logger, \
     OPENAI_API_KEY, OPENAI_COMPLETION_OPTIONS, GPT_URL, GPT_VERSION
+from .types import LabelType
 
 client = OpenAI(
     api_key=OPENAI_API_KEY,
@@ -24,12 +26,12 @@ def load_prompt_template() -> dict:
             prompts = yaml.safe_load(file)
         logger.info("Prompt template loaded successfully.")
         return prompts
-    except FileNotFoundError:
+    except FileNotFoundError as exc:
         logger.error("Prompt configuration file not found.")
-        raise FileNotFoundError("Prompt configuration file not found.")
+        raise FileNotFoundError("Prompt configuration file not found.") from exc
     except yaml.YAMLError as exc:
         logger.error(f"Error parsing YAML file: {exc}")
-        raise RuntimeError(f"Error parsing YAML file: {exc}")
+        raise RuntimeError(f"Error parsing YAML file: {exc}") from exc
 
 
 def create_prompt(text: str) -> dict:
@@ -41,9 +43,9 @@ def create_prompt(text: str) -> dict:
             message_text=text)
         logger.info("Prompt created successfully.")
         return prompt_text
-    except KeyError:
+    except KeyError as exc:
         logger.error("Missing 'chat_classification_prompt' key in template.")
-        raise KeyError("Missing 'chat_classification_prompt' key in template.")
+        raise KeyError("Missing 'chat_classification_prompt' key in template.") from exc
 
 
 def api_call(prompt: str) -> Optional[dict]:
@@ -59,10 +61,6 @@ def api_call(prompt: str) -> Optional[dict]:
     except OpenAIError as e:
         logger.error(f"An error occurred with the OpenAI API: {e}")
         return None
-    except Exception as e:
-        logger.error(
-            f"An unexpected error occurred during the OpenAI API call: {e}")
-        return None
 
 
 def extract_prediction(response) -> LabelType:
@@ -71,9 +69,9 @@ def extract_prediction(response) -> LabelType:
         predicted_text = response.choices[0].message.content
         logger.info("Prediction extracted successfully.")
         return predicted_text
-    except KeyError as e:
-        logger.error(f"Failed to extract prediction from response: {e}")
-        raise KeyError(f"Failed to extract prediction from response: {e}")
+    except KeyError as exc:
+        logger.error(f"Failed to extract prediction from response: {exc}")
+        raise KeyError(f"Failed to extract prediction from response: {exc}") from exc
 
 
 def classify_text(text: str) -> Optional[LabelType]:
@@ -84,6 +82,6 @@ def classify_text(text: str) -> Optional[LabelType]:
         predicted_text = extract_prediction(response)
         logger.info(f"Text classified successfully: {predicted_text}")
         return predicted_text
-    except Exception as e:
+    except (KeyError, OpenAIError) as e:
         logger.error(f"An error occurred during text classification: {e}")
         return None

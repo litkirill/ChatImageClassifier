@@ -1,3 +1,9 @@
+"""Configuration module for the application.
+
+This module is used to centralize all configuration settings used throughout the application.
+It  include configurations for external APIs and more.
+"""
+
 import os
 from dotenv import load_dotenv
 

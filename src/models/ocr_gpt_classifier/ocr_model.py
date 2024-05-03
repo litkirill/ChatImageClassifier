@@ -1,7 +1,10 @@
+"""Module for Optical Character Recognition (OCR) using the Yandex OCR API."""
+
 import base64
 import json
-import requests
 from typing import IO, Optional
+import requests
+
 from src.config import logger, \
     CATALOG_ID, YANDEX_OCR_API_KEY, YANDEX_OCR_URL
 
@@ -14,7 +17,7 @@ def encode_image_to_base64(uploaded_file: IO[bytes]) -> Optional[str]:
         logger.info("Image encoded successfully")
         return encoded_image
     except FileNotFoundError:
-        logger.error(f"Image file not found")
+        logger.error("Image file not found")
         return None
 
 
@@ -46,20 +49,22 @@ def call_ocr_api(request_body: str) -> Optional[dict]:
             "x-folder-id": CATALOG_ID,
             "x-data-logging-enabled": "true"
         }
-        response = requests.post(YANDEX_OCR_URL, headers=headers,
-                                 data=request_body)
+        response = requests.post(
+            YANDEX_OCR_URL,
+            headers=headers,
+            data=request_body,
+            timeout=15
+        )
         response.raise_for_status()  # Raises an HTTPError for bad requests
         logger.info("OCR API call was successful")
         return response.json()
 
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Failed to send request: {e}",
-                     exc_info=True)  # Log traceback
-        raise ConnectionError(f"Failed to send request OCR API: {e}")
-    except Exception as e:
+    except requests.exceptions.RequestException as exc:
         logger.error(
-            f"An unexpected error occurred during the OCR API call: {e}")
-        return None
+            f"Failed to send request: {exc}",
+            exc_info=True
+        )  # Log traceback
+        raise ConnectionError(f"Failed to send request OCR API: {exc}") from exc
 
 
 def extract_text_from_ocr_response(ocr_result: dict) -> Optional[str]:
@@ -68,8 +73,8 @@ def extract_text_from_ocr_response(ocr_result: dict) -> Optional[str]:
         full_text = ocr_result["result"]["textAnnotation"]["fullText"]
         logger.info("Text extracted successfully")
         return full_text
-    except Exception as e:
-        logger.error(f"An error occurred while extracting text: {e}")
+    except KeyError as exc:
+        logger.error(f"Key error while extracting text: {exc}")
         return None
 
 
